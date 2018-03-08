@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head><title>Отскакивающие мячики</title></head>
+<body>
+<script src = "https://code.jquery.com/jquery-2.1.0.js"></script>
+<canvas id="canvas" width="800" height="800"></canvas>
+<p></p>
+<p>Диаметр шара: <input type="number" id="diam" min="1" max="100" value="10">
+Цвет: <input type="color" id="color"></p>
+
+<button onclick="balls.push(new Ball(document.getElementById('diam').value, document.getElementById('color').value));">Добавить мяч</button>
+<button onclick="balls.pop();">Убрать мяч</button>
+
+<script>
+var Ball = function (diam, color) {
+this.x = 100;
+this.y = 100;
+this.xSpeed = (Math.random() * 10) - 5;
+this.ySpeed = (Math.random() * 10) - 5;
+this.diam = diam;
+this.color = color;
+};
+
+Ball.prototype.draw = function () {
+ctx.beginPath();
+ctx.fillStyle = this.color;
+ctx.arc(this.x, this.y, this.diam/2, 0, Math.PI * 2, false);
+ctx.fill();
+};
+
+Ball.prototype.move = function () {
+this.x += this.xSpeed;
+this.y += this.ySpeed;
+};
+
+Ball.prototype.checkCollision = function () {
+if (this.x < 0 + this.diam/2 || this.x > canvas.width) {
+this.xSpeed = -this.xSpeed;
+}
+if (this.y < 0 + this.diam/2 ||this.y > canvas.height) {
+this.ySpeed = -this.ySpeed;
+}
+}
+Ball.prototype.checkCollision1 = function () {
+if (this.x > 800 - this.diam/2 || this.x > canvas.width) {
+this.xSpeed = -this.xSpeed;
+}
+if ( this.y > 800 - this.diam/2 || this.y > canvas.height) {
+this.ySpeed = -this.ySpeed;
+}
+}
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+
+var balls = [];
+
+setInterval(function () {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+for (var i = 0; i < balls.length; i++) {
+balls[i].draw();
+balls[i].move();
+balls[i].checkCollision();
+balls[i].checkCollision1();
+}
+ctx.strokeRect(0, 0, canvas.width, canvas.height);
+}, 30);
+
+$("#canvas").click(clickBall); // функция удаления мячика по клику на нем
+function clickBall(event)
+{
+for (var i = 0; i < balls.length; i++) {
+if (event.offsetX >= balls[i].x-balls[i].diam/2 &&
+event.offsetX <= balls[i].x+balls[i].diam/2 &&
+event.offsetY >= balls[i].y-balls[i].diam/2 &&
+event.offsetY <= balls[i].y+balls[i].diam/2)
+{
+balls.splice(i, 1);
+break;
+}
+}
+}
+</script>
+</body>
+</html>
